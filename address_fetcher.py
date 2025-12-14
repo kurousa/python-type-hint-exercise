@@ -1,7 +1,8 @@
-import requests
+from abc import ABC, abstractmethod
+import requests as requests_lib
 import json
 
-from typing import NewType, NotRequired, TypedDict
+from typing import NewType, NotRequired, TypedDict, cast
 
 class AddressInfo(TypedDict):
     prefecture: str
@@ -24,6 +25,38 @@ class FormattedAddress(TypedDict):
 ZipCode = NewType("ZipCode", str)
 # 型エイリアス
 type Headers = dict[str, str]
+type JsonObject = dict[str, object]
+
+class HttpResponse(ABC):
+    @property
+    @abstractmethod
+    def status_code(self) -> int: ...
+
+    @abstractmethod
+    def json(self) -> object: ...
+
+class HttpClient(ABC):
+    @abstractmethod
+    def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse: ...
+
+# ABCを継承した、Requestsのラッパークラス
+class RequestsHttpResponse(HttpResponse):
+    """requestsからのHttpResponse"""
+    def __init__(self, response: requests_lib.Response):
+        self._response = response
+
+    @property
+    def status_code(self) -> int:
+        return self._response.status_code
+
+    def json(self) -> object:
+        return self._response.json()
+
+class RequestsHttpClient(HttpClient):
+    """requestsを用いたHttpクライアント"""
+    def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse:
+        response = requests_lib.post(url, json=json, headers=headers)
+        return RequestsHttpResponse(response)
 
 def _build_full_address(address_data: AddressInfo) -> str:
     """
@@ -34,6 +67,7 @@ def _build_full_address(address_data: AddressInfo) -> str:
 def fetch_and_format_address(
     zipcode: ZipCode,
     include_kana: bool,
+    http_client: HttpClient,
     headers: Headers | None = None,
 ) -> str | None:
     """郵便番号から住所を取得し、整形して返す"""
@@ -43,13 +77,14 @@ def fetch_and_format_address(
 
     try:
         # 郵便番号検索APIにリクエスト
-        response = requests.post(api_url, json={"zipcode": zipcode})
+        response: HttpResponse = http_client.post(api_url, json={"zipcode": zipcode})
         if response.status_code != 200:
             print(f"Error: Failed to fetch address. Status: {response.status_code}")
             return None
 
         # APIの戻り値に、定義した型ヒントを適用
-        address_data: AddressInfo = response.json()  # 結果を JSON 形式にする
+        # HttpResponseとしてはobjectを返すため、AddressInfoへとキャストを実施
+        address_data: AddressInfo = cast(AddressInfo, response.json())
 
         # フル住所を生成
         full_address = _build_full_address(address_data)
@@ -74,7 +109,7 @@ def fetch_and_format_address(
         # 結果を JSON 形式で返す
         return json.dumps(result, indent=2, ensure_ascii=False)
 
-    except requests.exceptions.RequestException as e:
+    except requests_lib.exceptions.RequestException as e:
         # APIリクエスト時の例外を処理
         print(f"An error occurred during API request: {e}")
         return None
@@ -87,6 +122,7 @@ def fetch_and_format_address(
 # 本来は別のファイルに呼び出し処理があることを想定してください。
 if __name__ == "__main__":
     zipcode: ZipCode = ZipCode("1000001")
-    result = fetch_and_format_address(zipcode, include_kana=True)
+    http_client = RequestsHttpClient()
+    result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=True)
     if result is not None:
         print(result)
