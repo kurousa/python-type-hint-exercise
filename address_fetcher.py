@@ -1,8 +1,17 @@
 import requests
 import json
 
-# FIXME: 関数の型ヒントを追加
-def _build_full_address(address_data):
+from typing import TypedDict
+
+class AddressInfo(TypedDict):
+    prefecture: str
+    city: str
+    town: str
+    prefecture_kana: str
+    city_kana: str
+    town_kana: str
+
+def _build_full_address(address_data: AddressInfo) -> str:
     """
     住所データからフル住所文字列を生成する。
     """
@@ -21,7 +30,7 @@ def fetch_and_format_address(zipcode, include_kana):
         if response.status_code != 200:
             print(f"Error: Failed to fetch address. Status: {response.status_code}")
             return None
-        address_data = response.json()  # 結果を JSON 形式にする
+        address_data: AddressInfo = response.json()  # 結果を JSON 形式にする
 
         # フル住所を生成
         # FIXME: 型解釈のない関数呼び出しを改善
