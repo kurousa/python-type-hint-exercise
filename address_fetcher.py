@@ -1,7 +1,7 @@
 import requests
 import json
 
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 class AddressInfo(TypedDict):
     prefecture: str
@@ -11,6 +11,15 @@ class AddressInfo(TypedDict):
     city_kana: str
     town_kana: str
 
+class FormattedAddress(TypedDict):
+    zipcode: str
+    full_address: str
+    prefecture: str
+    city: str
+    town: str
+    # include_kanaがFalseの場合は、full_address_kanaは不要なためNotRequiredとする
+    full_address_kana: NotRequired[str]
+    
 def _build_full_address(address_data: AddressInfo) -> str:
     """
     住所データからフル住所文字列を生成する。
@@ -37,7 +46,7 @@ def fetch_and_format_address(zipcode: str, include_kana: bool) -> str | None:
         full_address = _build_full_address(address_data)
 
         # 結果を組み立て
-        result = {
+        result: FormattedAddress = {
             "zipcode": zipcode,
             "full_address": full_address,
             "prefecture": address_data["prefecture"],
