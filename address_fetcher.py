@@ -17,8 +17,7 @@ def _build_full_address(address_data: AddressInfo) -> str:
     """
     return address_data["prefecture"] + address_data["city"] + address_data["town"]
 
-# FIXME: 関数の型ヒントを追加
-def fetch_and_format_address(zipcode, include_kana):
+def fetch_and_format_address(zipcode: str, include_kana: bool) -> str | None:
     """郵便番号から住所を取得し、整形して返す"""
 
     # APIエンドポイントのURLを定義（架空の API）
@@ -30,10 +29,11 @@ def fetch_and_format_address(zipcode, include_kana):
         if response.status_code != 200:
             print(f"Error: Failed to fetch address. Status: {response.status_code}")
             return None
+
+        # APIの戻り値に、定義した型ヒントを適用
         address_data: AddressInfo = response.json()  # 結果を JSON 形式にする
 
         # フル住所を生成
-        # FIXME: 型解釈のない関数呼び出しを改善
         full_address = _build_full_address(address_data)
 
         # 結果を組み立て
@@ -61,15 +61,13 @@ def fetch_and_format_address(zipcode, include_kana):
         print(f"An error occurred during API request: {e}")
         return None
     except (KeyError, IndexError) as e:
-        # データアクセス時の例外を処理
-        print(f"Error processing data: Invalid data structure - {e}")
-        return None
+        # 外部APIからのレスポンスが予期しない形式の場合のエラーは事前チェック不可である前提であるためRuntime Errorとする
+        raise RuntimeError(f"予期しないレスポンス: {e}") from e
 
 # 実行例
 # ここでは便宜上、本スクリプト内で上記関数を呼び出していますが、
 # 本来は別のファイルに呼び出し処理があることを想定してください。
 if __name__ == "__main__":
-    # FIXME: 型解釈のない関数呼び出しを改善
     result = fetch_and_format_address("1000001", include_kana=True)
     if result is not None:
         print(result)
