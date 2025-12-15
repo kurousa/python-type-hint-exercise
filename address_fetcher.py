@@ -1,7 +1,7 @@
 import requests
 import json
 
-from typing import TypedDict
+from typing import NewType, NotRequired, TypedDict
 
 class AddressInfo(TypedDict):
     prefecture: str
@@ -11,13 +11,31 @@ class AddressInfo(TypedDict):
     city_kana: str
     town_kana: str
 
+class FormattedAddress(TypedDict):
+    zipcode: str
+    full_address: str
+    prefecture: str
+    city: str
+    town: str
+    # include_kanaがFalseの場合は、full_address_kanaは不要なためNotRequiredとする
+    full_address_kana: NotRequired[str]
+
+# 実態はstrだが、型チェッカーに対してZipCodeという別の型であることを明示する
+ZipCode = NewType("ZipCode", str)
+# 型エイリアス
+type Headers = dict[str, str]
+
 def _build_full_address(address_data: AddressInfo) -> str:
     """
     住所データからフル住所文字列を生成する。
     """
     return address_data["prefecture"] + address_data["city"] + address_data["town"]
 
-def fetch_and_format_address(zipcode: str, include_kana: bool) -> str | None:
+def fetch_and_format_address(
+    zipcode: ZipCode,
+    include_kana: bool,
+    headers: Headers | None = None,
+) -> str | None:
     """郵便番号から住所を取得し、整形して返す"""
 
     # APIエンドポイントのURLを定義（架空の API）
@@ -37,7 +55,7 @@ def fetch_and_format_address(zipcode: str, include_kana: bool) -> str | None:
         full_address = _build_full_address(address_data)
 
         # 結果を組み立て
-        result = {
+        result: FormattedAddress = {
             "zipcode": zipcode,
             "full_address": full_address,
             "prefecture": address_data["prefecture"],
@@ -68,6 +86,7 @@ def fetch_and_format_address(zipcode: str, include_kana: bool) -> str | None:
 # ここでは便宜上、本スクリプト内で上記関数を呼び出していますが、
 # 本来は別のファイルに呼び出し処理があることを想定してください。
 if __name__ == "__main__":
-    result = fetch_and_format_address("1000001", include_kana=True)
+    zipcode: ZipCode = ZipCode("1000001")
+    result = fetch_and_format_address(zipcode, include_kana=True)
     if result is not None:
         print(result)
