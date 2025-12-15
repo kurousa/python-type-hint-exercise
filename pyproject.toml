@@ -8,10 +8,6 @@ dependencies = [
     "requests>=2.32.5",
     "types-requests>=2.32.4.20250913",
 ]
-[tool.mypy]
-strict = true                # 厳格モードを有効化
-show_error_codes = true      # エラーコードを表示（原因特定に便利）
-warn_unreachable = true      # 到達不能コードを警告
 
 [dependency-groups]
 dev = [
@@ -20,3 +16,10 @@ dev = [
     "pytest>=9.0.2",
     "ruff>=0.14.9",
 ]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true                 # 厳格モードを有効化
+show_error_codes = true       # エラーコードを表示（原因特定に便利）
+warn_unreachable = true       # 到達不能コードを警告
+ignore_missing_imports = true # サードパーティの型がない場合にエラーにしない
