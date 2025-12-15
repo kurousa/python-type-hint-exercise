@@ -1,6 +1,6 @@
-from address_fetcher import HttpClient, HttpResponse, Headers, JsonObject, fetch_and_format_address, ZipCode
+from address_fetcher import HttpResponse, Headers, JsonObject, fetch_and_format_address, ZipCode
 
-class MockResponse(HttpResponse):
+class MockResponse:
     def __init__(self, status_code: int, data: object):
         self._status_code = status_code
         self._data = data
@@ -13,7 +13,7 @@ class MockResponse(HttpResponse):
         return self._data
 
 
-class MockHttpClient(HttpClient):
+class MockHttpClient:
     def __init__(self, response: MockResponse):
         self._response = response
 

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Protocol
 import requests as requests_lib
 import json
 
@@ -27,20 +28,16 @@ ZipCode = NewType("ZipCode", str)
 type Headers = dict[str, str]
 type JsonObject = dict[str, object]
 
-class HttpResponse(ABC):
+class HttpResponse(Protocol):
     @property
-    @abstractmethod
     def status_code(self) -> int: ...
-
-    @abstractmethod
     def json(self) -> object: ...
 
-class HttpClient(ABC):
-    @abstractmethod
+class HttpClient(Protocol):
     def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse: ...
 
-# ABCを継承した、Requestsのラッパークラス
-class RequestsHttpResponse(HttpResponse):
+# Requestsのラッパークラス
+class RequestsHttpResponse:
     """requestsからのHttpResponse"""
     def __init__(self, response: requests_lib.Response):
         self._response = response
@@ -52,7 +49,7 @@ class RequestsHttpResponse(HttpResponse):
     def json(self) -> object:
         return self._response.json()
 
-class RequestsHttpClient(HttpClient):
+class RequestsHttpClient:
     """requestsを用いたHttpクライアント"""
     def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse:
         response = requests_lib.post(url, json=json, headers=headers)
