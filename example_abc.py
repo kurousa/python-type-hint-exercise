@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 type Headers = dict[str, str]
 type JsonObject = dict[str, object]
 
+
 class HttpResponse(ABC):
     """HTTP レスポンスの契約を定義する抽象基底クラス"""
 
@@ -24,12 +25,16 @@ class HttpClient(ABC):
     """HTTP クライアントの契約を定義する抽象基底クラス"""
 
     @abstractmethod
-    def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse:
+    def post(
+        self, url: str, json: JsonObject, headers: Headers | None = None
+    ) -> HttpResponse:
         """POST リクエストを送信する（サブクラスで実装必須）"""
         ...
 
+
 class BrokenClient(HttpClient):
     pass  # post を実装していない
+
 
 client = BrokenClient()
 # TypeError: Can't instantiate abstract class BrokenClient with abstract method post
