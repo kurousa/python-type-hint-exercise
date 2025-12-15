@@ -41,6 +41,10 @@ jobs:
       - name: Check formatting with Ruff
         run: uv run ruff format --check .
 
-      # 6. Pytestの実行
+      # 6. Mypyによる型チェック
+      - name: Type check with mypy
+        run: uv run mypy .
+      
+      # 7. Pytestの実行
       - name: Run tests
         run: uv run pytest
