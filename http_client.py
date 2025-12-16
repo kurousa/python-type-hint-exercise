@@ -49,5 +49,5 @@ class RequestsHttpClient:
     def post(
         self, url: str, json: JsonObject, headers: Headers | None = None
     ) -> HttpResponse:
-        response = requests_lib.post(url, json=json, headers=headers)
+        response = self._session.post(url, json=json, headers=headers)
         return RequestsHttpResponse(response)
