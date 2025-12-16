@@ -1,71 +1,16 @@
-from typing import Protocol
-import requests as requests_lib
+"""
+main.py
+
+責務: アプリケーションの主要ビジネスロジックを組み合わせ、実行を行う
+"""
+
 import json
+from typing import cast
 
-from typing import NewType, NotRequired, TypedDict, cast
+import requests as requests_lib
 
-
-class AddressInfo(TypedDict):
-    prefecture: str
-    city: str
-    town: str
-    prefecture_kana: str
-    city_kana: str
-    town_kana: str
-
-
-class FormattedAddress(TypedDict):
-    zipcode: str
-    full_address: str
-    prefecture: str
-    city: str
-    town: str
-    # include_kanaがFalseの場合は、full_address_kanaは不要なためNotRequiredとする
-    full_address_kana: NotRequired[str]
-
-
-# 実態はstrだが、型チェッカーに対してZipCodeという別の型であることを明示する
-ZipCode = NewType("ZipCode", str)
-# 型エイリアス
-type Headers = dict[str, str]
-type JsonObject = dict[str, object]
-
-
-class HttpResponse(Protocol):
-    @property
-    def status_code(self) -> int: ...
-    def json(self) -> object: ...
-
-
-class HttpClient(Protocol):
-    def post(
-        self, url: str, json: JsonObject, headers: Headers | None = None
-    ) -> HttpResponse: ...
-
-
-# Requestsのラッパークラス
-class RequestsHttpResponse:
-    """requestsからのHttpResponse"""
-
-    def __init__(self, response: requests_lib.Response):
-        self._response = response
-
-    @property
-    def status_code(self) -> int:
-        return self._response.status_code
-
-    def json(self) -> object:
-        return self._response.json()
-
-
-class RequestsHttpClient:
-    """requestsを用いたHttpクライアント"""
-
-    def post(
-        self, url: str, json: JsonObject, headers: Headers | None = None
-    ) -> HttpResponse:
-        response = requests_lib.post(url, json=json, headers=headers)
-        return RequestsHttpResponse(response)
+from http_client import HttpClient, HttpResponse, RequestsHttpClient
+from models import AddressInfo, FormattedAddress, Headers, ZipCode
 
 
 def _build_full_address(address_data: AddressInfo) -> str:
