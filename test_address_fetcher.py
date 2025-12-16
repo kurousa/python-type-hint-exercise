@@ -1,10 +1,8 @@
-from address_fetcher import (
-    HttpResponse,
-    Headers,
-    JsonObject,
+from http_client import HttpResponse, JsonObject
+from main import (
     fetch_and_format_address,
-    ZipCode,
 )
+from models import Headers, ZipCode
 
 
 class MockResponse:
