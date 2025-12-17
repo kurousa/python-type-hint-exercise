@@ -5,19 +5,12 @@ main.py
 """
 
 import json
-from typing import cast
+from typing import Any, cast
 
 import requests as requests_lib
 
 from http_client import HttpClient, HttpResponse, RequestsHttpClient
 from models import AddressInfo, FormattedAddress, Headers, ZipCode
-
-
-def _build_full_address(address_data: AddressInfo) -> str:
-    """
-    住所データからフル住所文字列を生成する。
-    """
-    return address_data["prefecture"] + address_data["city"] + address_data["town"]
 
 
 def fetch_and_format_address(
@@ -40,27 +33,23 @@ def fetch_and_format_address(
 
         # APIの戻り値に、定義した型ヒントを適用
         # HttpResponseとしてはobjectを返すため、AddressInfoへとキャストを実施
-        address_data: AddressInfo = cast(AddressInfo, response.json())
-
+        response_dict: dict[str, Any] = cast(dict[str, Any], response.json())
+        address_info: AddressInfo = AddressInfo(**response_dict)
         # フル住所を生成
-        full_address = _build_full_address(address_data)
+        full_address = address_info.full_address()
 
         # 結果を組み立て
         result: FormattedAddress = {
             "zipcode": zipcode,
             "full_address": full_address,
-            "prefecture": address_data["prefecture"],
-            "city": address_data["city"],
-            "town": address_data["town"],
+            "prefecture": address_info.prefecture,
+            "city": address_info.city,
+            "town": address_info.town,
         }
 
         # カナを含める場合は、取得結果に対して各カナ情報を連結し、 full_address_kana にする
         if include_kana:
-            result["full_address_kana"] = (
-                address_data["prefecture_kana"]
-                + address_data["city_kana"]
-                + address_data["town_kana"]
-            )
+            result["full_address_kana"] = address_info.full_address_kana()
 
         # 結果を JSON 形式で返す
         return json.dumps(result, indent=2, ensure_ascii=False)
