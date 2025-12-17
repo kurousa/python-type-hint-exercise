@@ -49,7 +49,7 @@ def fetch_and_format_address(
 
         # カナを含める場合は、取得結果に対して各カナ情報を連結し、 full_address_kana にする
         if include_kana:
-            result = {**result, "full_address_kana": address_info.full_address_kana()}
+            result["full_address_kana"] = address_info.full_address_kana()
 
         # 結果を JSON 形式で返す
         return json.dumps(result, indent=2, ensure_ascii=False)
