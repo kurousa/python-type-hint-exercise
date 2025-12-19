@@ -69,8 +69,6 @@ def fetch_and_format_address(
 if __name__ == "__main__":
     zipcode: ZipCode = ZipCode("1000001")
     http_client = RequestsHttpClient()
-    result = fetch_and_format_address(
-        zipcode, http_client=http_client, include_kana=True
-    )
+    result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=True)
     if result is not None:
         print(result)
