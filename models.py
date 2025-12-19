@@ -14,7 +14,6 @@ type Headers = dict[str, str]
 
 @dataclass(frozen=True, slots=True)
 class AddressInfo:
-    API_PATH: ClassVar[str] = "/v1/address"
     zipcode: str
     prefecture: str
     prefecture_kana: str
@@ -22,6 +21,8 @@ class AddressInfo:
     city_kana: str
     town: str
     town_kana: str
+
+    API_PATH: ClassVar[str] = "/v1/address"
 
     @classmethod
     def unmarshal_payload(cls, payload: Mapping[str, Any]) -> "AddressInfo":
