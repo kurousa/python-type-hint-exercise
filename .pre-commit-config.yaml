@@ -1,43 +1,43 @@
 repos:
-  - repo: local
-    hooks:
-      # 1. Ruff Format (フォーマット)
-      - id: ruff-format
-        name: Ruff Format
-        entry: uv run ruff format
-        language: system
-        types: [python]
-        require_serial: true
+    - repo: local
+      hooks:
+          # 1. Ruff Format (フォーマット)
+          - id: ruff-format
+            name: Ruff Format
+            entry: uv run ruff format
+            language: system
+            types: [python]
+            require_serial: true
 
-      # 2. Ruff Check (Lint + 自動修正)
-      # --fix をつけると、import整列などを自動で直してコミットに含めます
-      - id: ruff-check
-        name: Ruff Check
-        entry: uv run ruff check --fix
-        language: system
-        types: [python]
-        require_serial: true
+          # 2. Ruff Check (Lint + 自動修正)
+          # --fix をつけると、import整列などを自動で直してコミットに含めます
+          - id: ruff-check
+            name: Ruff Check
+            entry: uv run ruff check --fix
+            language: system
+            types: [python]
+            require_serial: true
 
-      # 3. Mypy
-      # プロジェクトの uv 環境を使って型チェックを行います
-      - id: mypy
-        name: mypy
-        entry: uv run mypy
-        language: system
-        types: [python]
-        require_serial: true
-        # 変更されたファイルだけをチェックする場合はこのままでOK
-        # プロジェクト全体を常にチェックしたい場合は以下をコメントイン:
-        # pass_filenames: false
-        # entry: uv run mypy .
+          # 3. Mypy
+          # プロジェクトの uv 環境を使って型チェックを行います
+          - id: mypy
+            name: mypy
+            entry: uv run mypy --exclude "example_.*\.py$"
+            language: system
+            types: [python]
+            require_serial: true
+            # 変更されたファイルだけをチェックする場合はこのままでOK
+            # プロジェクト全体を常にチェックしたい場合は以下をコメントイン:
+            # pass_filenames: false
+            # entry: uv run mypy .
 
-      # 4. Pytest
-      # デフォルトでは全ファイル対象になるため、時間がかかる場合があります。
-      # ここでは stage: push を指定して、プッシュ時のみ実行するようにします。
-      - id: pytest
-        name: Pytest
-        entry: uv run pytest
-        language: system
-        pass_filenames: false # 変更ファイルだけでなく全体をテストするため
-        always_run: true
-        stages: [pre-push]        # 'commit' にすればコミット時にも実行可能
+          # 4. Pytest
+          # デフォルトでは全ファイル対象になるため、時間がかかる場合があります。
+          # ここでは stage: push を指定して、プッシュ時のみ実行するようにします。
+          - id: pytest
+            name: Pytest
+            entry: uv run pytest
+            language: system
+            pass_filenames: false # 変更ファイルだけでなく全体をテストするため
+            always_run: true
+            stages: [pre-push] # 'commit' にすればコミット時にも実行可能
