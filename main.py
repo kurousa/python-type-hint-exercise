@@ -5,12 +5,15 @@ main.py
 """
 
 import json
-from typing import Any, cast
+from typing import Any, Final, cast
 
 import requests as requests_lib
 
 from http_client import HttpClient, HttpResponse, RequestsHttpClient
 from models import AddressInfo, FormattedAddress, Headers, ZipCode
+
+BASE_URL: Final[str] = "https://api.zipcode-jp.example"
+HTTP_OK: Final[int] = 200
 
 
 def fetch_and_format_address(
@@ -22,12 +25,12 @@ def fetch_and_format_address(
     """郵便番号から住所を取得し、整形して返す"""
 
     # APIエンドポイントのURLを定義（架空の API）
-    api_url = "https://api.zipcode-jp.example/v1/address"
+    api_url = f"{BASE_URL}{AddressInfo.API_PATH}"
 
     try:
         # 郵便番号検索APIにリクエスト
         response: HttpResponse = http_client.post(api_url, json={"zipcode": zipcode})
-        if response.status_code != 200:
+        if response.status_code != HTTP_OK:
             print(f"Error: Failed to fetch address. Status: {response.status_code}")
             return None
 
