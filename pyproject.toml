@@ -26,5 +26,5 @@ ignore_missing_imports = true # サードパーティの型がない場合にエ
 
 [tool.ruff]
 exclude = ["__pycache__", ".mypy_cache", ".pytest_cache", ".venv", ".pre-commit-config.yaml"]
-select = ["E", "F", "W"]
+lint.select = ["E", "F", "W"]
 line-length = 120

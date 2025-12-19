@@ -20,9 +20,7 @@ class HttpResponse(Protocol):
 
 
 class HttpClient(Protocol):
-    def post(
-        self, url: str, json: JsonObject, headers: Headers | None = None
-    ) -> HttpResponse: ...
+    def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse: ...
 
 
 # Requestsのラッパークラス
@@ -46,8 +44,6 @@ class RequestsHttpClient:
     def __init__(self) -> None:
         self._session = requests_lib.Session()
 
-    def post(
-        self, url: str, json: JsonObject, headers: Headers | None = None
-    ) -> HttpResponse:
+    def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse:
         response = self._session.post(url, json=json, headers=headers)
         return RequestsHttpResponse(response)
