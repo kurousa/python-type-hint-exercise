@@ -23,3 +23,8 @@ strict = true                 # 厳格モードを有効化
 show_error_codes = true       # エラーコードを表示（原因特定に便利）
 warn_unreachable = true       # 到達不能コードを警告
 ignore_missing_imports = true # サードパーティの型がない場合にエラーにしない
+
+[tool.ruff]
+exclude = ["__pycache__", ".mypy_cache", ".pytest_cache", ".venv", ".pre-commit-config.yaml"]
+select = ["E", "F", "W"]
+line-length = 120
