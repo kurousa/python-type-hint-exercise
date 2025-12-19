@@ -34,7 +34,7 @@ def fetch_and_format_address(
         # APIの戻り値に、定義した型ヒントを適用
         # HttpResponseとしてはobjectを返すため、AddressInfoへとキャストを実施
         payload: dict[str, Any] = cast(dict[str, Any], response.json())
-        address_info: AddressInfo = AddressInfo.unmarsahl_payload(payload)
+        address_info: AddressInfo = AddressInfo.unmarshal_payload(payload)
         # フル住所を生成
         full_address = address_info.full_address()
 

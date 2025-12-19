@@ -24,16 +24,16 @@ class AddressInfo:
     town_kana: str
 
     @classmethod
-    def unmarsahl_payload(cls, payload: Mapping[str, Any]) -> "AddressInfo":
+    def unmarshal_payload(cls, payload: Mapping[str, Any]) -> "AddressInfo":
         """APIレスポンスからAddressInfoオブジェクトを生成する"""
         return cls(
-            zipcode=str(payload.get("zipcode")),
-            prefecture=str(payload.get("prefecture")),
-            prefecture_kana=str(payload.get("prefecture_kana")),
-            city=str(payload.get("city")),
-            city_kana=str(payload.get("city_kana")),
-            town=str(payload.get("town")),
-            town_kana=str(payload.get("town_kana")),
+            zipcode=str(payload["zipcode"]),
+            prefecture=str(payload["prefecture"]),
+            prefecture_kana=str(payload["prefecture_kana"]),
+            city=str(payload["city"]),
+            city_kana=str(payload["city_kana"]),
+            town=str(payload["town"]),
+            town_kana=str(payload["town_kana"]),
         )
 
     def full_address(self) -> str:
