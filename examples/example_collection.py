@@ -1,6 +1,6 @@
 from collections.abc import Iterable, Sequence
 
-from models import AddressInfo
+from ..models import AddressInfo
 
 
 def format_addresses(addresses: Sequence[AddressInfo]) -> list[str]:
