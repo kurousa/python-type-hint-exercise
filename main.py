@@ -12,7 +12,7 @@ import typer
 
 
 from http_client import HttpClient, HttpResponse, RequestsHttpClient
-from models import AddressInfo, FormattedAddress, Headers, ZipCode
+from models import AddressFormatter, AddressInfo, Headers, ZipCode
 
 BASE_URL: Final[str] = "https://api.zipcode-jp.example"
 HTTP_OK: Final[int] = 200
@@ -35,26 +35,12 @@ def fetch_and_format_address(
         if response.status_code != HTTP_OK:
             print(f"Error: Failed to fetch address. Status: {response.status_code}")
             return None
-
-        # APIの戻り値に、定義した型ヒントを適用
-        # HttpResponseとしてはobjectを返すため、AddressInfoへとキャストを実施
         payload: dict[str, Any] = cast(dict[str, Any], response.json())
         address_info: AddressInfo = AddressInfo.unmarshal_payload(payload)
+
         # フル住所を生成
-        full_address = address_info.full_address()
-
-        # 結果を組み立て
-        result: FormattedAddress = {
-            "zipcode": zipcode,
-            "full_address": full_address,
-            "prefecture": address_info.prefecture,
-            "city": address_info.city,
-            "town": address_info.town,
-        }
-
-        # カナを含める場合は、取得結果に対して各カナ情報を連結し、 full_address_kana にする
-        if include_kana:
-            result["full_address_kana"] = address_info.full_address_kana()
+        formatter = AddressFormatter()
+        result = formatter.with_address(address_info).with_kana(include_kana).build()
 
         # 結果を JSON 形式で返す
         return json.dumps(result, indent=2, ensure_ascii=False)
@@ -72,7 +58,10 @@ def main(
     param: Annotated[str, typer.Argument(help="検索対象の郵便番号")],
     include_kana: Annotated[bool, typer.Option(help="カナ表記を含める")] = True,
 ) -> None:
-    """APIで郵便番号を検索して、情報を出力します"""
+    """APIで郵便番号を検索して、情報を出力します
+
+    --include_kana をつけることで、カナ表記で出力します
+    """
     zipcode: ZipCode = ZipCode(param)
     http_client = RequestsHttpClient()
     result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=include_kana)

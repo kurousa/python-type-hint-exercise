@@ -7,8 +7,9 @@ models.py
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, ClassVar, Mapping, NewType, NotRequired, TypedDict
+from dataclasses import dataclass, replace
+from typing import Any, ClassVar, Mapping, NewType, NotRequired, TypedDict, Self
+from typing_extensions import ReadOnly
 
 ZipCode = NewType("ZipCode", str)
 type Headers = dict[str, str]
@@ -49,10 +50,44 @@ class AddressInfo:
 
 
 class FormattedAddress(TypedDict):
-    zipcode: str
-    full_address: str
-    prefecture: str
-    city: str
-    town: str
+    zipcode: ReadOnly[str]
+    full_address: ReadOnly[str]
+    prefecture: ReadOnly[str]
+    city: ReadOnly[str]
+    town: ReadOnly[str]
     # include_kanaがFalseの場合は、full_address_kanaは不要なためNotRequiredとする
     full_address_kana: NotRequired[str]
+
+
+@dataclass(frozen=True, slots=True)
+class AddressFormatter:
+    """データ整形ロジック"""
+
+    _address: AddressInfo | None = None
+    _include_kana: bool = False
+
+    def with_address(self, address: AddressInfo) -> Self:
+        """AddressInfoでAddressFormatterインスタンスを生成"""
+        return replace(self, _address=address)
+
+    def with_kana(self, include_kana: bool = True) -> Self:
+        """include_kabaでAddressFormatterインスタンスを生成"""
+        return replace(self, _include_kana=include_kana)
+
+    def build(self) -> FormattedAddress:
+        """整形ロジックの組み立て"""
+        if self._address is None:
+            raise ValueError("Address must be set before build")
+
+        formatted_address: FormattedAddress = {
+            "zipcode": self._address.zipcode,
+            "full_address": self._address.full_address(),
+            "prefecture": self._address.prefecture,
+            "city": self._address.city,
+            "town": self._address.town,
+        }
+
+        if self._include_kana:
+            formatted_address["full_address_kana"] = self._address.full_address_kana()
+
+        return formatted_address
