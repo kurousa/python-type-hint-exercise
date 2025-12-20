@@ -20,12 +20,12 @@ repos:
 
       # 3. Mypy
       # プロジェクトの uv 環境を使って型チェックを行います
-      # - id: mypy
-      #   name: mypy
-      #   entry: uv run mypy --exclude "^examples/" --exclude-gitignore
-      #   language: system
-      #   types: [python]
-      #   require_serial: true
+      - id: mypy
+        name: mypy
+        entry: uv run mypy --exclude "^examples/" --exclude-gitignore
+        language: system
+        types: [python]
+        require_serial: true
         # 変更されたファイルだけをチェックする場合はこのままでOK
         # プロジェクト全体を常にチェックしたい場合は以下をコメントイン:
         # pass_filenames: false
