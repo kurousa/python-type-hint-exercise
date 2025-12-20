@@ -4,7 +4,7 @@ repos:
       # 1. Ruff Format (フォーマット)
       - id: ruff-format
         name: Ruff Format
-        entry: uv run ruff format
+        entry: uv run ruff format --check
         language: system
         types: [python]
         require_serial: true
@@ -13,7 +13,7 @@ repos:
       # --fix をつけると、import整列などを自動で直してコミットに含めます
       - id: ruff-check
         name: Ruff Check
-        entry: uv run ruff check --fix
+        entry: uv run ruff check
         language: system
         types: [python]
         require_serial: true
