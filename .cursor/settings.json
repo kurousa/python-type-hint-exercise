@@ -8,6 +8,5 @@
             "strings": true
         },
         "editor.wordBasedSuggestions": "off",
-    },
-    "editor.formatOnSave": true
+    }
 }
