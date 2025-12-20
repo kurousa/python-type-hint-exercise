@@ -5,9 +5,11 @@ main.py
 """
 
 import json
-from typing import Any, Final, cast
+from typing import Annotated, Any, Final, cast
 
 import requests as requests_lib
+import typer
+
 
 from http_client import HttpClient, HttpResponse, RequestsHttpClient
 from models import AddressInfo, FormattedAddress, Headers, ZipCode
@@ -66,12 +68,17 @@ def fetch_and_format_address(
         raise RuntimeError(f"予期しないレスポンス: {e}") from e
 
 
-# 実行例
-# ここでは便宜上、本スクリプト内で上記関数を呼び出していますが、
-# 本来は別のファイルに呼び出し処理があることを想定してください。
-if __name__ == "__main__":
-    zipcode: ZipCode = ZipCode("1000001")
+def main(
+    param: Annotated[str, typer.Argument(help="検索対象の郵便番号")],
+    include_kana: Annotated[bool, typer.Option(help="カナ表記を含める")] = True,
+) -> None:
+    """APIで郵便番号を検索して、情報を出力します"""
+    zipcode: ZipCode = ZipCode(param)
     http_client = RequestsHttpClient()
-    result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=True)
+    result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=include_kana)
     if result is not None:
         print(result)
+
+
+if __name__ == "__main__":
+    typer.run(main)
