@@ -5,6 +5,8 @@ models.py
 ドメイン固有の ZipCode や API レスポンスの構造に加えて、複数のモジュールで使う Headers もここに配置
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, ClassVar, Mapping, NewType, NotRequired, TypedDict
 
@@ -25,7 +27,7 @@ class AddressInfo:
     API_PATH: ClassVar[str] = "/v1/address"
 
     @classmethod
-    def unmarshal_payload(cls, payload: Mapping[str, Any]) -> "AddressInfo":
+    def unmarshal_payload(cls, payload: Mapping[str, Any]) -> AddressInfo:
         """APIレスポンスからAddressInfoオブジェクトを生成する"""
         return cls(
             zipcode=str(payload["zipcode"]),
