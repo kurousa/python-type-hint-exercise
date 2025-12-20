@@ -68,11 +68,14 @@ def fetch_and_format_address(
         raise RuntimeError(f"予期しないレスポンス: {e}") from e
 
 
-def main(param: Annotated[str, typer.Argument(help="検索対象の郵便番号")]) -> None:
+def main(
+    param: Annotated[str, typer.Argument(help="検索対象の郵便番号")],
+    include_kana: Annotated[bool, typer.Option(help="カナ表記を含める")] = True,
+) -> None:
     """APIで郵便番号を検索して、情報を出力します"""
     zipcode: ZipCode = ZipCode(param)
     http_client = RequestsHttpClient()
-    result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=True)
+    result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=include_kana)
     if result is not None:
         print(result)
 
