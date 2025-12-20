@@ -63,22 +63,20 @@ class FormattedAddress(TypedDict):
 class AddressFormatter:
     """データ整形ロジック"""
 
-    _address: AddressInfo | None = None
+    _address: AddressInfo
     _include_kana: bool = False
 
-    def with_address(self, address: AddressInfo) -> Self:
-        """AddressInfoでAddressFormatterインスタンスを生成"""
-        return replace(self, _address=address)
+    @classmethod
+    def from_address(cls, address: AddressInfo) -> Self:
+        """AddressInfoからAddressFormatterインスタンスを生成"""
+        return cls(_address=address)
 
-    def with_kana(self, include_kana: bool = True) -> Self:
-        """include_kabaでAddressFormatterインスタンスを生成"""
+    def with_kana(self, include_kana: bool) -> Self:
+        """カナ表記を含めるかどうかを設定する"""
         return replace(self, _include_kana=include_kana)
 
     def build(self) -> FormattedAddress:
         """整形ロジックの組み立て"""
-        if self._address is None:
-            raise ValueError("Address must be set before build")
-
         formatted_address: FormattedAddress = {
             "zipcode": self._address.zipcode,
             "full_address": self._address.full_address(),

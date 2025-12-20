@@ -39,8 +39,7 @@ def fetch_and_format_address(
         address_info: AddressInfo = AddressInfo.unmarshal_payload(payload)
 
         # フル住所を生成
-        formatter = AddressFormatter()
-        result = formatter.with_address(address_info).with_kana(include_kana).build()
+        result = AddressFormatter.from_address(address_info).with_kana(include_kana).build()
 
         # 結果を JSON 形式で返す
         return json.dumps(result, indent=2, ensure_ascii=False)
