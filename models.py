@@ -28,7 +28,7 @@ class AddressInfo:
     API_PATH: ClassVar[str] = "/v1/address"
 
     @classmethod
-    def unmarshal_payload(cls, payload: Mapping[str, Any]) -> AddressInfo:
+    def unmarshall_payload(cls, payload: Mapping[str, Any]) -> AddressInfo:
         """APIレスポンスからAddressInfoオブジェクトを生成する"""
         return cls(
             zipcode=str(payload["zipcode"]),
@@ -97,7 +97,7 @@ class ApiError:
     message: str
 
     @classmethod
-    def unmarshal_payload(cls, payload: Mapping[str, Any]) -> ApiError:
+    def unmarshall_payload(cls, payload: Mapping[str, Any]) -> ApiError:
         return cls(
             error_code=int(payload["error_code"]),
             message=str(payload["message"]),
