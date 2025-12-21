@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from typing import Any, ClassVar, Mapping, NewType, NotRequired, TypedDict, Self
-from typing_extensions import ReadOnly
+from typing_extensions import ReadOnly, TypeIs
 
 ZipCode = NewType("ZipCode", str)
 type Headers = dict[str, str]
@@ -89,3 +89,24 @@ class AddressFormatter:
             formatted_address["full_address_kana"] = self._address.full_address_kana()
 
         return formatted_address
+
+
+@dataclass(frozen=True, slots=True)
+class ApiError:
+    error_code: int
+    message: str
+
+    @classmethod
+    def unmarshar_payload(cls, payload: Mapping[str, Any]) -> ApiError:
+        return cls(
+            error_code=int(payload["error_code"]),
+            message=str(payload["message"]),
+        )
+
+
+type ApiResponse = AddressInfo | ApiError
+
+
+def is_error_response(response: ApiResponse) -> TypeIs[ApiError]:
+    """responseがApiErrorかどうかを判定"""
+    return isinstance(response, ApiError)
