@@ -9,11 +9,11 @@ def first[T](items: Sequence[T]) -> T | None:
     Examples:
         >>> items = [0, 1, 2, 3]
         >>> first(items)
-            0
+        0
 
         >>> items = []
-        >>> first(items)
-            None
+        >>> first(items) is None
+        True
     """
     return items[0] if items else None
 
