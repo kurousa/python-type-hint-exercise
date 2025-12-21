@@ -19,5 +19,15 @@ def first[T](items: Sequence[T]) -> T | None:
 
 
 def get_or[K, V](d: Mapping[K, V], key: K, default: V) -> V:
-    """マッピングから値を取得する。キーがなければデフォルト値を返す"""
+    """マッピングから値を取得する。キーがなければデフォルト値を返す
+
+    Examples:
+        >>> d = {"timeout": 30, "retries": 3}
+        >>> get_or(d, "timeout", 10)
+            30
+        >>> get_or(d, "retries", 1)
+            3
+        >>> get_or(d, "unknown", "this is unknown key")
+            "this is unknown key"
+    """
     return d.get(key, default)
