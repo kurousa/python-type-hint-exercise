@@ -13,7 +13,7 @@ def measure_time[**P, R](func: Callable[P, R]) -> Callable[P, R]:
         start_time = time.perf_counter()
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
-        print(f"Finished '{func.__name__}` in {end_time - start_time:.4f} secs")
+        print(f"Finished '{func.__name__}' in {end_time - start_time:.4f} secs")
         return result
 
     return wrapper
