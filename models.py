@@ -97,7 +97,7 @@ class ApiError:
     message: str
 
     @classmethod
-    def unmarshar_payload(cls, payload: Mapping[str, Any]) -> ApiError:
+    def unmarshal_payload(cls, payload: Mapping[str, Any]) -> ApiError:
         return cls(
             error_code=int(payload["error_code"]),
             message=str(payload["message"]),
