@@ -20,7 +20,7 @@ HTTP_OK: Final[int] = 200
 
 def parse_response(payload: Mapping[str, Any]) -> ApiResponse:
     if "error_code" in payload:
-        return ApiError.unmarshar_payload(payload)
+        return ApiError.unmarshal_payload(payload)
     return AddressInfo.unmarshal_payload(payload)
 
 
