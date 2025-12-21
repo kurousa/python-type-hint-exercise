@@ -28,6 +28,6 @@ def get_or[K, V](d: Mapping[K, V], key: K, default: V) -> V:
         >>> get_or(d, "retries", 1)
         3
         >>> get_or(d, "unknown", "this is unknown key")
-        "this is unknown key"
+        'this is unknown key'
     """
     return d.get(key, default)
