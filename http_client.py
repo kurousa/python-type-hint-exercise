@@ -4,11 +4,14 @@ http_client.py
 責務: HTTPクライアントの抽象化と実装を提供する
 """
 
+from __future__ import annotations
+
 from typing import Protocol
 
 import requests as requests_lib
 
 from models import Headers
+from decorators import measure_time
 
 type JsonObject = dict[str, object]
 
@@ -44,6 +47,7 @@ class RequestsHttpClient:
     def __init__(self) -> None:
         self._session = requests_lib.Session()
 
+    @measure_time
     def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse:
         response = self._session.post(url, json=json, headers=headers)
         return RequestsHttpResponse(response)
