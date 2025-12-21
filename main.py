@@ -5,17 +5,23 @@ main.py
 """
 
 import json
-from typing import Annotated, Any, Final, cast
+from typing import Annotated, Any, Final, Mapping, cast
 
 import requests as requests_lib
 import typer
 
 
 from http_client import HttpClient, HttpResponse, RequestsHttpClient
-from models import AddressFormatter, AddressInfo, Headers, ZipCode
+from models import AddressFormatter, AddressInfo, ApiError, ApiResponse, Headers, ZipCode, is_error_response
 
 BASE_URL: Final[str] = "https://api.zipcode-jp.example"
 HTTP_OK: Final[int] = 200
+
+
+def parse_response(payload: Mapping[str, Any]) -> ApiResponse:
+    if "error_code" in payload:
+        return ApiError.unmarshall_payload(payload)
+    return AddressInfo.unmarshall_payload(payload)
 
 
 def fetch_and_format_address(
@@ -36,10 +42,14 @@ def fetch_and_format_address(
             print(f"Error: Failed to fetch address. Status: {response.status_code}")
             return None
         payload: dict[str, Any] = cast(dict[str, Any], response.json())
-        address_info: AddressInfo = AddressInfo.unmarshal_payload(payload)
+        api_response = parse_response(payload)
+
+        if is_error_response(api_response):
+            print(f"API Error: {api_response.message}")
+            return None
 
         # フル住所を生成
-        result = AddressFormatter.from_address(address_info).with_kana(include_kana).build()
+        result = AddressFormatter.from_address(api_response).with_kana(include_kana).build()
 
         # 結果を JSON 形式で返す
         return json.dumps(result, indent=2, ensure_ascii=False)
