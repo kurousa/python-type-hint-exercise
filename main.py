@@ -80,8 +80,10 @@ def fetch_and_format_address(
         # フル住所を生成
         return AddressFormatter.from_address(address_info).with_kana(include_kana).build()
 
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         return FetchError(type=FetchErrorType.NETWORK_ERROR, message=str(e))
+    except (KeyError, IndexError, TypeError, requests.exceptions.JSONDecodeError) as e:
+        return FetchError(type=FetchErrorType.SERVER_ERROR, message=f"予期しないレスポンス形式です: {e}")
 
 
 def main(
