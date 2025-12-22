@@ -8,6 +8,7 @@ models.py
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from enum import Enum, auto
 from typing import Any, ClassVar, Mapping, NewType, NotRequired, TypedDict, Self
 from typing_extensions import ReadOnly, TypeIs
 
@@ -110,3 +111,19 @@ type ApiResponse = AddressInfo | ApiError
 def is_error_response(response: ApiResponse) -> TypeIs[ApiError]:
     """responseがApiErrorかどうかを判定"""
     return isinstance(response, ApiError)
+
+
+class FetchErrorType(Enum):
+    """リクエストエラータイプ列挙型"""
+
+    NETWORK_ERROR = auto()
+    NOT_FOUND_ERROR = auto()
+    CLIENT_ERROR = auto()
+    SERVER_ERROR = auto()
+    API_ERROR = auto()
+
+
+@dataclass(frozen=True, slots=True)
+class FetchError:
+    type: FetchErrorType
+    message: str
