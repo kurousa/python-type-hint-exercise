@@ -46,5 +46,6 @@ jobs:
         run: uv run mypy . --exclude "example_.*\.py$"
       
       # 7. Pytestの実行
-      - name: Run tests
-        run: uv run pytest
+      # テストケースなしの場合でもエラーとしない
+      - name: Run pytest (allow no tests)
+        run: bash -lc 'uv run pytest || [ $? -eq 5 ]'
