@@ -7,6 +7,7 @@ main.py
 import json
 from typing import Annotated, Any, Final, Mapping, assert_never, cast
 
+import requests
 import typer
 
 
@@ -73,7 +74,6 @@ def fetch_and_format_address(
         api_response = parse_response(payload)
 
         if is_error_response(api_response):
-            print(f"API Error: {api_response.message}")
             return FetchError(FetchErrorType.API_ERROR, api_response.message)
 
         address_info = api_response
