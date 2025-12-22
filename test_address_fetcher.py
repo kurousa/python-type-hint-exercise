@@ -44,4 +44,6 @@ def test_fetch_address_success() -> None:
 
     # 👉 ネットワーク通信なしでテストできる！
     result = fetch_and_format_address(ZipCode("1000001"), include_kana=True, http_client=mock_client)
-    assert result is not None
+    assert isinstance(result, dict)
+    assert result["full_address"] == "東京都千代田区千代田"
+    assert result["full_address_kana"] == "トウキョウトチヨダクチヨダ"
