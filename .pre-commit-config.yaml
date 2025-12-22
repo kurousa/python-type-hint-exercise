@@ -36,8 +36,9 @@ repos:
       # ここでは stage: push を指定して、プッシュ時のみ実行するようにします。
       - id: pytest
         name: Pytest
-        entry: uv run pytest
+        entry: bash
         language: system
+        args: ["-lc", "uv run pytest || [ $? -eq 5 ]"] # テスト0件を許容するため
         pass_filenames: false # 変更ファイルだけでなく全体をテストするため
         always_run: true
         stages: [pre-push]        # 'commit' にすればコミット時にも実行可能
