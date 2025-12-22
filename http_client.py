@@ -10,7 +10,7 @@ from typing import Protocol
 
 import requests as requests_lib
 
-from models import Headers
+from models import FetchErrorType, Headers
 from decorators import measure_time
 
 type JsonObject = dict[str, object]
@@ -51,3 +51,13 @@ class RequestsHttpClient:
     def post(self, url: str, json: JsonObject, headers: Headers | None = None) -> HttpResponse:
         response = self._session.post(url, json=json, headers=headers)
         return RequestsHttpResponse(response)
+
+
+def to_error_type(status_code: int) -> FetchErrorType:
+    match status_code:
+        case 404:
+            return FetchErrorType.NOT_FOUND_ERROR
+        case num if 400 <= num < 500:
+            return FetchErrorType.CLIENT_ERROR
+        case _:
+            return FetchErrorType.SERVER_ERROR
