@@ -17,9 +17,7 @@ LoggerName = Annotated[str, non_empty]
 @validate_args
 def setup_logger(
     name: LoggerName,
-    level: LogLevel = "INFO",
 ) -> Result[logging.Logger, ValidationError]:
-    """指定された名前とレベルでロガーを設定する"""
+    """指定された名前でロガーを取得する"""
     logger = logging.getLogger(name)
-    logger.setLevel(level)
     return Ok(logger)
