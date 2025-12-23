@@ -30,12 +30,16 @@ from logger import setup_logger
 
 BASE_URL: Final[str] = "https://api.zipcode-jp.example"
 HTTP_OK: Final[int] = 200
-
 logger_result = setup_logger(name=__name__)
 if is_err(logger_result):
     raise RuntimeError(f"Logger initialization failed: {logger_result.error}")
 
 logger = logger_result.value
+# ログレベル、フォーマットの指定
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+)
 
 
 def parse_response(payload: Mapping[str, Any]) -> ApiResponse:
@@ -105,10 +109,6 @@ def main(
 
     --include_kana をつけることで、カナ表記で出力します
     """
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    )
     http_client = RequestsHttpClient()
     zipcode: ZipCode = ZipCode(param)
     result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=include_kana)
