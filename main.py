@@ -75,7 +75,7 @@ def fetch_and_format_address(
         api_response = parse_response(payload)
 
         if is_error_response(api_response):
-            return Err(FetchError(FetchErrorType.API_ERROR, api_response.message))
+            return Err(FetchError(type=FetchErrorType.API_ERROR, message=api_response.message))
 
         address_info = api_response
         # フル住所を生成
