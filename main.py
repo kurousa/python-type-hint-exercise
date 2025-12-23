@@ -24,6 +24,7 @@ from models import (
     ZipCode,
     is_error_response,
 )
+from result import Result, Ok, Err, is_err
 
 BASE_URL: Final[str] = "https://api.zipcode-jp.example"
 HTTP_OK: Final[int] = 200
@@ -57,7 +58,7 @@ def fetch_and_format_address(
     include_kana: bool,
     http_client: HttpClient,
     headers: Headers | None = None,
-) -> FormattedAddress | FetchError:
+) -> Result[FormattedAddress, FetchError]:
     """郵便番号から住所を取得し、整形して返す"""
 
     # APIエンドポイントのURLを定義（架空の API）
@@ -68,22 +69,22 @@ def fetch_and_format_address(
         response: HttpResponse = http_client.post(api_url, json={"zipcode": zipcode}, headers=headers)
         if response.status_code != HTTP_OK:
             error_type = to_error_type(response.status_code)
-            return FetchError(error_type, f"HTTP {response.status_code}")
+            return Err(FetchError(type=error_type, message=f"HTTP {response.status_code}"))
 
         payload: dict[str, Any] = cast(dict[str, Any], response.json())
         api_response = parse_response(payload)
 
         if is_error_response(api_response):
-            return FetchError(FetchErrorType.API_ERROR, api_response.message)
+            return Err(FetchError(type=FetchErrorType.API_ERROR, message=api_response.message))
 
         address_info = api_response
         # フル住所を生成
-        return AddressFormatter.from_address(address_info).with_kana(include_kana).build()
+        return Ok(AddressFormatter.from_address(address_info).with_kana(include_kana).build())
 
     except requests.exceptions.RequestException as e:
-        return FetchError(type=FetchErrorType.NETWORK_ERROR, message=str(e))
+        return Err(FetchError(type=FetchErrorType.NETWORK_ERROR, message=str(e)))
     except (KeyError, IndexError, TypeError, requests.exceptions.JSONDecodeError) as e:
-        return FetchError(type=FetchErrorType.SERVER_ERROR, message=f"予期しないレスポンス形式です: {e}")
+        return Err(FetchError(type=FetchErrorType.SERVER_ERROR, message=f"予期しないレスポンス形式です: {e}"))
 
 
 def main(
@@ -97,10 +98,10 @@ def main(
     http_client = RequestsHttpClient()
     zipcode: ZipCode = ZipCode(param)
     result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=include_kana)
-    if isinstance(result, FetchError):
-        handle_fetch_error(result)
+    if is_err(result):
+        handle_fetch_error(result.error)
     else:
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+        print(json.dumps(result.value, indent=2, ensure_ascii=False))
 
 
 if __name__ == "__main__":
