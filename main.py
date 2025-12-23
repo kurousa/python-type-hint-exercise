@@ -35,11 +35,6 @@ if is_err(logger_result):
     raise RuntimeError(f"Logger initialization failed: {logger_result.error}")
 
 logger = logger_result.value
-# ログレベル、フォーマットの指定
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 
 
 def parse_response(payload: Mapping[str, Any]) -> ApiResponse:
@@ -104,11 +99,17 @@ def fetch_and_format_address(
 def main(
     param: Annotated[str, typer.Argument(help="検索対象の郵便番号")],
     include_kana: Annotated[bool, typer.Option(help="カナ表記を含める")] = True,
+    log_level: Annotated[str, typer.Option(help="ログレベルを設定します")] = "INFO",
 ) -> None:
     """APIで郵便番号を検索して、情報を出力します
 
     --include_kana をつけることで、カナ表記で出力します
     """
+    # ログレベル、フォーマットの指定
+    logging.basicConfig(
+        level=log_level.upper(),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
     http_client = RequestsHttpClient()
     zipcode: ZipCode = ZipCode(param)
     result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=include_kana)
