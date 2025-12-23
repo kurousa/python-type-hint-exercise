@@ -5,6 +5,7 @@ main.py
 """
 
 import json
+import logging
 from typing import Annotated, Any, Final, Mapping, assert_never, cast
 
 import requests
@@ -25,9 +26,15 @@ from models import (
     is_error_response,
 )
 from result import Result, Ok, Err, is_err
+from logger import setup_logger
 
 BASE_URL: Final[str] = "https://api.zipcode-jp.example"
 HTTP_OK: Final[int] = 200
+logger_result = setup_logger(name=__name__)
+if is_err(logger_result):
+    raise RuntimeError(f"Logger initialization failed: {logger_result.error}")
+
+logger = logger_result.value
 
 
 def parse_response(payload: Mapping[str, Any]) -> ApiResponse:
@@ -40,15 +47,15 @@ def handle_fetch_error(error: FetchError) -> None:
     """エラーの種類に応じてメッセージを表示する"""
     match error.type:
         case FetchErrorType.NETWORK_ERROR:
-            print(f"ネットワークエラー: {error.message}")
+            logger.error(f"ネットワークエラー: {error.message}")
         case FetchErrorType.NOT_FOUND_ERROR:
-            print(f"郵便番号が見つかりません: {error.message}")
+            logger.error(f"郵便番号が見つかりません: {error.message}")
         case FetchErrorType.CLIENT_ERROR:
-            print(f"リクエストエラー: {error.message}")
+            logger.error(f"リクエストエラー: {error.message}")
         case FetchErrorType.SERVER_ERROR:
-            print(f"サーバーエラー: {error.message}")
+            logger.error(f"サーバーエラー: {error.message}")
         case FetchErrorType.API_ERROR:
-            print(f"APIエラー: {error.message}")
+            logger.error(f"APIエラー: {error.message}")
         case _:
             assert_never(error.type)
 
@@ -61,6 +68,7 @@ def fetch_and_format_address(
 ) -> Result[FormattedAddress, FetchError]:
     """郵便番号から住所を取得し、整形して返す"""
 
+    logger.debug(f"検索処理開始: zipcode={zipcode}, include_kana={include_kana}")
     # APIエンドポイントのURLを定義（架空の API）
     api_url = f"{BASE_URL}{AddressInfo.API_PATH}"
 
@@ -79,6 +87,7 @@ def fetch_and_format_address(
 
         address_info = api_response
         # フル住所を生成
+        logger.debug(f"検索処理終了: zipcode={zipcode}, include_kana={include_kana}")
         return Ok(AddressFormatter.from_address(address_info).with_kana(include_kana).build())
 
     except requests.exceptions.RequestException as e:
@@ -90,11 +99,17 @@ def fetch_and_format_address(
 def main(
     param: Annotated[str, typer.Argument(help="検索対象の郵便番号")],
     include_kana: Annotated[bool, typer.Option(help="カナ表記を含める")] = True,
+    log_level: Annotated[str, typer.Option(help="ログレベルを設定します")] = "INFO",
 ) -> None:
     """APIで郵便番号を検索して、情報を出力します
 
     --include_kana をつけることで、カナ表記で出力します
     """
+    # ログレベル、フォーマットの指定
+    logging.basicConfig(
+        level=log_level.upper(),
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
     http_client = RequestsHttpClient()
     zipcode: ZipCode = ZipCode(param)
     result = fetch_and_format_address(zipcode, http_client=http_client, include_kana=include_kana)
