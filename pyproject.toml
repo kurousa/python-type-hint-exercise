@@ -1,7 +1,11 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "python-type-hint-exercise"
-version = "0.1.0"
-description = "Add your description here"
+name = "address_search"
+version = "1.0.0"
+description = "郵便番号から住所を検索するライブラリ"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -9,6 +13,8 @@ dependencies = [
     "typer>=0.20.1",
     "types-requests>=2.32.4.20250913",
 ]
+[project.scripts]  
+address-search = "address_search.main:cli"  
 
 [dependency-groups]
 dev = [
@@ -29,3 +35,6 @@ ignore_missing_imports = true # サードパーティの型がない場合にエ
 exclude = ["__pycache__", ".mypy_cache", ".pytest_cache", ".venv", ".pre-commit-config.yaml"]
 lint.select = ["E", "F", "W"]
 line-length = 120
+
+[tool.setuptools.package-data]
+address_search = ["py.typed"]

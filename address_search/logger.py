@@ -4,8 +4,8 @@ from __future__ import annotations
 import logging
 from typing import Annotated, Literal
 
-from result import Result, Ok
-from validator import ValidationError, non_empty, validate_args
+from .result import Result, Ok
+from .validator import ValidationError, non_empty, validate_args
 
 # Literal でログレベルを型安全に
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]

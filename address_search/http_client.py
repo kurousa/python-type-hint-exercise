@@ -10,8 +10,8 @@ from typing import Protocol
 
 import requests as requests_lib
 
-from models import FetchErrorType, Headers
-from decorators import measure_time
+from .models import FetchErrorType, Headers
+from .decorators import measure_time
 
 type JsonObject = dict[str, object]
 
