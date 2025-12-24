@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from functools import wraps
 from typing import Annotated, Callable, get_args, get_origin, get_type_hints
 
-from result import Err, Ok, Result, is_err
+from .result import Err, Ok, Result, is_err
 
 
 @dataclass(frozen=True, slots=True)
