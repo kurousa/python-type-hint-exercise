@@ -13,6 +13,8 @@ dependencies = [
     "typer>=0.20.1",
     "types-requests>=2.32.4.20250913",
 ]
+[project.scripts]  
+address-search = "address_search.main:cli"  
 
 [dependency-groups]
 dev = [

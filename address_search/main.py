@@ -119,5 +119,5 @@ def main(
         print(json.dumps(result.value, indent=2, ensure_ascii=False))
 
 
-if __name__ == "__main__":
+def cli() -> None:
     typer.run(main)
