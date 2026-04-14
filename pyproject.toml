@@ -20,7 +20,7 @@ address-search = "address_search.main:cli"
 dev = [
     "mypy>=1.19.0",
     "pre-commit>=4.5.0",
-    "pytest>=9.0.2",
+    "pytest>=9.0.3",
     "ruff>=0.14.9",
 ]
 
